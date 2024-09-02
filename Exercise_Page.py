@@ -1,15 +1,16 @@
 import sys
-from PyQt5 import QtWidgets, uic
+from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPainterPath
+from QR_Page import QR_Page
 
 form_window = uic.loadUiType("Exercise_Page_UI.ui")[0]
 
 class FocusLabel(QLabel):
-    def __init__(self, text, value):
+    def __init__(self, text, exType):
         super().__init__(text)
-        self.value = value
+        self.exType = exType
         self.setFixedSize(350, 350)
         self.setStyleSheet("""
             QLabel {
@@ -39,7 +40,7 @@ class FocusLabel(QLabel):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            print(self.value)
+            self.parentWidget().open_qr_page(self.exType)
         super().keyPressEvent(event)
 
 def round_image(self, pixmap, radius):
@@ -60,33 +61,33 @@ def round_image(self, pixmap, radius):
     painter.end()
     return rounded
 
-class Exercise_Page(QWidget, form_window):
+class Exercise(QWidget, form_window):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle('Exercise')
 
-        self.label1 = FocusLabel('Sit-up', "sitUp")
-        self.label2 = FocusLabel('Squat', "squat")
-        self.label3 = FocusLabel('Push-up', "pushUp")
+        self.label1 = FocusLabel('Sit-up', "SITUP")
+        self.label2 = FocusLabel('Squat', "SQUAT")
+        self.label3 = FocusLabel('Push-up', "PUSHUP")
 
-        self.label1.move(250, 300)
-        self.label2.move(780, 300)
-        self.label3.move(1310, 300)
+        self.label1.move(250, 240)
+        self.label2.move(780, 240)
+        self.label3.move(1310, 240)
 
         self.label1.setFocusPolicy(Qt.StrongFocus)
         self.label2.setFocusPolicy(Qt.StrongFocus)
         self.label3.setFocusPolicy(Qt.StrongFocus)
 
-        pixmap = QPixmap({image}).scaled(300, 300)
+        pixmap = QPixmap("situp.png").scaled(348, 348)
         rounded_pixmap = round_image(self, pixmap, 40)
         self.label1.setPixmap(rounded_pixmap)
 
-        pixmap = QPixmap({image}).scaled(300, 300)
+        pixmap = QPixmap("squat.png").scaled(330, 330)
         rounded_pixmap = round_image(self, pixmap, 40)
         self.label2.setPixmap(rounded_pixmap)
 
-        pixmap = QPixmap({image}).scaled(300, 300)
+        pixmap = QPixmap("pushup.png").scaled(330, 330)
         rounded_pixmap = round_image(self, pixmap, 40)
         self.label3.setPixmap(rounded_pixmap)
 
@@ -113,8 +114,13 @@ class Exercise_Page(QWidget, form_window):
             next_index = (current_index + direction) % len(widgets)
             widgets[next_index].setFocus()
 
+    def open_qr_page(self, exType):
+        self.qr_page = QR_Page(exType)
+        self.qr_page.show()
+        self.close()
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = Exercise_Page()
+    window = Exercise()
     window.show()
     sys.exit(app.exec_())
