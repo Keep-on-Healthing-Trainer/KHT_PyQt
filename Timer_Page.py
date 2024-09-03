@@ -28,7 +28,7 @@ class Timer(QDialog):
         self.text = self.lineEdit.text()
         print(f"Timer input received: {self.text}", flush=True)
         try:
-            timertext = (int(self.text[0:2]) * 60 + int(self.text[3:])) * 1000  # 타이머를 밀리초로 변환
+            timertext = (int(self.text[0:2]) * 60 + int(self.text[3:])) * 1000
             print(f"Timer set for: {timertext} milliseconds", flush=True)
 
             self.open_explanation_page(timertext)
@@ -40,7 +40,6 @@ class Timer(QDialog):
         print("open Explanation page", flush=True)
         self.hide()
 
-        # Explanation 페이지로 값을 넘기면서 이동
         self.explanation_page = Explanation(self.exType, self.user_uuid, timertext)
         self.explanation_page.exec_()
 

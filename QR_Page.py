@@ -86,7 +86,7 @@ class QR_Page(QWidget):
                 data = {
                     "messageType": "ENTER",
                     "sessionId": self.sessionId,
-                    "senderId": "13b1549f-42aa-4ff8-9955-d710c426c6c3"
+                    "senderId": {GUI_uuid}
                 }
                 await websocket.send(json.dumps(data))
                 print(f"Send data to websocket: {data}", flush=True)

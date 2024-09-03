@@ -1,20 +1,14 @@
-from PyQt5.QtCore import Qt
 import sys
 from PyQt5.QtWidgets import QApplication, QDialog, QStackedWidget
+from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 from CountDown_Page import CountDown_Page
+from SerialThread import SerialThread
 
 class Explanation(QDialog):
-    def __init__(self, exType, user_uuid, timertext, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         loadUi("Explanation_Page_UI.ui", self)
-
-        self.exType = exType
-        self.user_uuid = user_uuid
-        self.timertext = timertext
-        print(
-            f"Explanation Page Initialized with exType: {self.exType}, user_uuid: {self.user_uuid}, timertext: {self.timertext}",
-            flush=True)
 
         self.pushButton.setStyleSheet("""
         QPushButton {
@@ -25,31 +19,31 @@ class Explanation(QDialog):
         }
         """)
 
-        # QPushButton 클릭 이벤트
-        self.pushButton.clicked.connect(self.open_standard_page)
+        self.serial_thread = serial_thread
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            print("Enter 키가 눌렸습니다. StandardPage로 이동합니다.", flush=True)
             self.open_standard_page()
 
     def open_standard_page(self):
-        # StandardPage로 이동
+        self.serial_thread.send_data('3')
         widget.setCurrentIndex(widget.currentIndex() + 1)
+
 
 class StandardPage(QDialog):
     def __init__(self):
         super().__init__()
         loadUi("Standard_Page_UI.ui", self)
 
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            print("Enter 키가 눌렸습니다. StandardSuccessPage로 이동합니다.", flush=True)
-            self.open_success_page()
+        self.serial_thread = serial_thread
+        self.serial_thread.data_received.connect(self.handle_serial_data)
 
-    def open_success_page(self):
-        # StandardSuccessPage로 이동
-        widget.setCurrentIndex(widget.currentIndex() + 2)
+    def handle_serial_data(self, data):
+        if data == 'Y':
+            widget.setCurrentIndex(widget.currentIndex() + 2)
+        elif data == 'N':
+            widget.setCurrentIndex(widget.currentIndex() + 1)
+
 
 class StandardSuccessPage(QDialog):
     def __init__(self):
@@ -58,12 +52,9 @@ class StandardSuccessPage(QDialog):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            print("Enter 키가 눌렸습니다. CountDown 페이지로 이동합니다.", flush=True)
-            self.open_re_page()
+            print("Enter 키가 눌렸습니다. Countdown 페이지로 이동합니다.", flush=True)
+            widget.setCurrentIndex(widget.indexOf(countdown_page))
 
-    def open_re_page(self):
-        # StandardSuccessPage로 이동
-        widget.setCurrentIndex(widget.currentIndex() - 1)
 
 class ReStandardPage(QDialog):
     def __init__(self):
@@ -72,16 +63,15 @@ class ReStandardPage(QDialog):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            print("Enter 키가 눌렸습니다. StandardPage로 이동합니다.", flush=True)
-            self.open_countdown_page()
+            serial_thread.send_data('3')
+            widget.setCurrentIndex(widget.indexOf(standard_page))
 
-    def open_countdown_page(self):
-        self.hide()
-        self.countdown_page = CountDown_Page(self.exType, self.user_uuid, self.timertext)
-        self.countdown_page.exec_()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    serial_thread = SerialThread(port='/dev/ttyS0', baudrate=9600, timeout=1)
+    serial_thread.start()
 
     widget = QStackedWidget()
 
@@ -89,20 +79,19 @@ if __name__ == "__main__":
     standard_page = StandardPage()
     restandard_page = ReStandardPage()
     success_page = StandardSuccessPage()
+    countdown_page = CountDown_Page()
 
     widget.addWidget(main_page)
     widget.addWidget(standard_page)
     widget.addWidget(restandard_page)
     widget.addWidget(success_page)
-
-    # CountDown 페이지를 직접 추가
-    countdown_page = CountDown_Page()  # CountDown 인스턴스를 직접 생성
     widget.addWidget(countdown_page)
 
     widget.setCurrentIndex(0)
     widget.setFixedHeight(1080)
     widget.setFixedWidth(1920)
-
     widget.show()
+
+    app.aboutToQuit.connect(serial_thread.stop)
 
     sys.exit(app.exec_())

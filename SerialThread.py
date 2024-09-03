@@ -4,11 +4,12 @@ import serial
 class SerialThread(QThread):
     data_received = pyqtSignal(str)
 
-    def __init__(self, port='/dev/ttyS0', baudrate=9600):
+    def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=1):
         super().__init__()
         self.port = port
         self.baudrate = baudrate
-        self.ser = serial.Serial(self.port, self.baudrate)
+        self.timeout = timeout
+        self.ser = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
         self.running = True
 
     def run(self):

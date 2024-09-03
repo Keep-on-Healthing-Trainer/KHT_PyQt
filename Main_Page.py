@@ -13,27 +13,30 @@ class Main(QMainWindow):
         self.ui = uic.loadUi("Main_Page_UI.ui", self)
 
         self.timer_label = self.findChild(QLabel, "Timer")
+        self.count_label = self.findChild(QLabel, "Count")
         self.kcal_label = self.findChild(QLabel, "Kcal")
 
-        if self.timer_label is None or self.kcal_label is None:
-            raise RuntimeError("QLabel with object names 'Timer' or 'Kcal' not found in the UI file.")
+        if self.timer_label is None:
+            print("Timer QLabel not found")
+        if self.kcal_label is None:
+            print("kcal QLabel not found")
+        if self.count_label is None:
+            print("Count QLabel not found")
 
         self.exType = exType
         self.user_uuid = user_uuid
         self.timertext = timertext
 
-        print(
-            f"Main Page Initialized with exType: {self.exType}, user_uuid: {self.user_uuid}, timertext: {self.timertext}",
-            flush=True)
+        print(f"Main Page Initialized with exType: {self.exType}, user_uuid: {self.user_uuid}, timertext: {self.timertext}", flush=True)
 
-        # 타이머 초기화
         self.count = int(self.timertext / 1000)
+        self.count_value = 0
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_count)
         self.timer.start(1000)
         self.update_timer_label()
+        self.update_count_label()
 
-        # SerialThread 초기화
         self.serial_thread = SerialThread()
         self.serial_thread.data_received.connect(self.handle_serial_data)
         self.serial_thread.start()
@@ -44,16 +47,23 @@ class Main(QMainWindow):
 
         if self.count <= 0:
             self.timer.stop()
-            self.timer_label.setText('Done!')
+            self.timer_label.setText('00:00')
             self.serial_thread.send_data('2')
-            self.send_data_to_url({base_url} + self.user_uuid, {"count": self.count, "type": self.exType})  # URL과 데이터 수정
+            self.url = {base_url/exercise} + self.user_uuid
+            print(self.url)
+            self.calculate_and_display_kcal()
+            self.send_data_to_url(self.url, {"count": self.count_value, "exType": self.exType})
 
     def update_timer_label(self):
         minutes, seconds = divmod(self.count, 60)
         self.timer_label.setText(f"{minutes:02}:{seconds:02}")
 
-    def display_kcal(self, kcal_value):
-        self.kcal_label.setText(f"Kcal: {kcal_value:.2f}")
+    def update_count_label(self):
+        self.count_label.setText(f"{self.count_value}")
+
+    def display_kcal(self):
+        kcal_value = self.count_value * 0.9
+        self.kcal_label.setText(f"{kcal_value:.2f}")
 
     def handle_serial_data(self, data):
         try:

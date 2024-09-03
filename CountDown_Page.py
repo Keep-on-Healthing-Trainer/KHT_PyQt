@@ -9,7 +9,6 @@ class CountDown_Page(QMainWindow):
     def __init__(self, exType, user_uuid, timertext, parent=None):
         super().__init__(parent)
 
-        # 전달받은 값 저장
         self.exType = exType
         self.user_uuid = user_uuid
         self.timertext = timertext
@@ -29,8 +28,8 @@ class CountDown_Page(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_count)
 
-        self.serial_thread = SerialThread()  # SerialThread 인스턴스 생성
-        self.serial_thread.start()  # SerialThread 시작
+        self.serial_thread = SerialThread()
+        self.serial_thread.start()
 
         self.start_timer()
 
@@ -48,14 +47,14 @@ class CountDown_Page(QMainWindow):
 
     def open_main_page(self):
         self.hide()
-        self.serial_thread.send_data('1')  # 시리얼로 1 전송
+        self.serial_thread.send_data('1')
         self.main_page = Main(self.exType, self.user_uuid, self.timertext)
         self.main_page.show()
         self.close()
 
     def closeEvent(self, event):
-        self.serial_thread.stop()  # 윈도우 종료 시 SerialThread 정리
-        self.serial_thread.wait()  # SerialThread 종료 대기
+        self.serial_thread.stop()
+        self.serial_thread.wait()
         event.accept()
 
 if __name__ == "__main__":
