@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QR_Page</class>
- <widget class="QWidget" name="QR_Page">
+ <class>Timer</class>
+ <widget class="QWidget" name="Timer">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -22,36 +22,39 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
-  <widget class="QLabel" name="imageLabel">
+  <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>780</x>
-     <y>270</y>
-     <width>370</width>
-     <height>370</height>
+     <x>600</x>
+     <y>290</y>
+     <width>711</width>
+     <height>271</height>
     </rect>
    </property>
-   <property name="styleSheet">
-    <string notr="true">border-color: rgb(228, 228, 228);</string>
+   <property name="font">
+    <font>
+     <family>맑은 고딕</family>
+     <pointsize>100</pointsize>
+    </font>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>mm.ss</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>685</x>
-     <y>659</y>
-     <width>570</width>
-     <height>35</height>
+     <x>180</x>
+     <y>620</y>
+     <width>1531</width>
+     <height>61</height>
     </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
    </property>
    <property name="font">
     <font>
@@ -61,47 +64,38 @@
      <bold>true</bold>
     </font>
    </property>
-   <property name="styleSheet">
-    <string notr="true">color: rgb(12, 81, 162);</string>
-   </property>
    <property name="text">
-    <string>KHT</string>
+    <string>목표 운동 시간을 입력해주세요</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>755</x>
-     <y>660</y>
-     <width>700</width>
-     <height>35</height>
+     <x>180</x>
+     <y>670</y>
+     <width>1531</width>
+     <height>31</height>
     </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
    </property>
    <property name="font">
     <font>
      <family>맑은 고딕</family>
-     <pointsize>20</pointsize>
+     <pointsize>10</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">color : rgb(217, 217, 217)</string>
    </property>
    <property name="text">
-    <string>앱을 이용하여 QR을 스캔해주세요</string>
+    <string>Enter를 누르면 타이머가 설정돼요</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>

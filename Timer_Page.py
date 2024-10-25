@@ -1,6 +1,7 @@
 import sys
+import serial
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QDialog
+from PyQt5.QtWidgets import QApplication, QDialog, QStackedWidget
 from Explanation_Page import Explanation
 
 
@@ -9,8 +10,10 @@ class Timer(QDialog):
         super().__init__(parent)
         print("load Timer_Page_UI", flush=True)
 
+        self.a = serial.Serial('COM4', 115200, timeout=1)
+
         try:
-            uic.loadUi("Timer_Page_UI.ui", self)
+            uic.loadUi("Timer_Page_UI(1).ui", self)
             print("Successfully loaded Timer_Page_UI", flush=True)
         except Exception as e:
             print(f"Failed to load Timer_Page_UI: {e}", flush=True)
@@ -21,6 +24,8 @@ class Timer(QDialog):
 
         print(f"Received exType: {self.exType}", flush=True)
         print(f"Received user_uuid: {self.user_uuid}", flush=True)
+
+        self.lineEdit.setFocus()
 
         self.lineEdit.returnPressed.connect(self.on_return_pressed)
 
@@ -37,16 +42,20 @@ class Timer(QDialog):
             print("Please enter time in mm:ss format.", flush=True)
 
     def open_explanation_page(self, timertext):
-        print("open Explanation page", flush=True)
-        self.hide()
+        self.explanation_page = Explanation(self.exType, self.user_uuid, timertext, self.a, self.parent())
 
-        self.explanation_page = Explanation(self.exType, self.user_uuid, timertext)
-        self.explanation_page.exec_()
+        self.parent().addWidget(self.explanation_page)
+        self.parent().setCurrentIndex(self.parent().currentIndex() + 1)
 
 
 if __name__ == '__main__':
     print("Starting Timer application", flush=True)
     app = QApplication(sys.argv)
-    window = Timer("SITUP", "example_sender_id")
-    window.show()
+    widget = QStackedWidget()
+    main = Timer("SITUP", "example_sender_id")
+    widget.addWidget(main)
+    widget.setCurrentIndex(0)
+    widget.setFixedHeight(1080)
+    widget.setFixedWidth(1920)
+    widget.show()
     sys.exit(app.exec_())

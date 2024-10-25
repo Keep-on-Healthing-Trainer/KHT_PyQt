@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication,QLabel, QStackedWidget, QDialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPainterPath
 from QR_Page import QR_Page
@@ -61,7 +61,7 @@ def round_image(self, pixmap, radius):
     painter.end()
     return rounded
 
-class Exercise(QWidget, form_window):
+class Exercise(QDialog, form_window):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -96,6 +96,8 @@ class Exercise(QWidget, form_window):
         self.label3.setParent(self)
 
         self.label1.setFocus()
+        self.widget = widget
+
 
     def keyPressEvent(self, event):
         focused_widget = QApplication.focusWidget()
@@ -115,12 +117,18 @@ class Exercise(QWidget, form_window):
             widgets[next_index].setFocus()
 
     def open_qr_page(self, exType):
-        self.qr_page = QR_Page(exType)
-        self.qr_page.show()
-        self.close()
+        # self.hide()
+        self.qr_page = QR_Page(exType, self.widget)
+        self.widget.addWidget(self.qr_page)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    widget = QStackedWidget()
     window = Exercise()
-    window.show()
+    widget.addWidget(window)
+    widget.setCurrentIndex(0)
+    widget.setFixedHeight(1080)
+    widget.setFixedWidth(1920)
+    widget.show()
     sys.exit(app.exec_())

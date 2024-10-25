@@ -150,7 +150,7 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QLabel" name="kcal">
+      <widget class="QLabel" name="Kcal">
        <property name="font">
         <font>
          <family>Roboto</family>
